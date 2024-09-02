@@ -46,116 +46,113 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: 'index',
     children: [{
-      path: 'dashboard',
+      path: '/index',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '仪表盘', icon: 'dashboard' }
     }]
   },
 
   {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
+    path: '/organizations',
     component: Layout,
     children: [
       {
         path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        name: 'Organizations',
+        component: () => import('@/views/organizations/index'),
+        meta: { title: '组织管理', icon: 'table' }
       }
     ]
   },
+  {
+    path: '/users',
+    component: Layout,
+    children: [{
+      path: 'index',
+      component: () => import('@/views/users/index'),
+      name: 'Users',
+      meta: { title: '用户管理', icon: 'tree' }
+    }]
+  },
+  {
+    path: '/application',
+    component: Layout,
+    children: [{
+      path: 'index',
+      component: () => import('@/views/application/index'),
+      name: 'Application',
+      meta: { title: '应用管理', icon: 'tree' }
+    }]
+  },
 
   {
-    path: '/nested',
+    path: '/access',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
+    redirect: '/access/sessions',
+    name: 'Access',
     meta: {
-      title: 'Nested',
+      title: '访问控制',
       icon: 'nested'
     },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'sessions',
+        name: 'Sessions',
+        component: () => import('@/views/access/sessions/index'),
+        meta: { title: '会话管理', icon: 'form' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
+        path: 'roles',
+        name: 'Roles',
+        component: () => import('@/views/access/roles/index'),
+        meta: { title: '角色管理', icon: 'form' }
+      },
+      {
+        path: 'rolemembers',
+        name: 'Rolemembers',
+        component: () => import('@/views/access/rolemembers/index'),
+        meta: { title: '角色成员管理', icon: 'form' }
+      },
+      {
+        path: 'permissions',
+        name: 'Permissions',
+        component: () => import('@/views/access/permissions/index'),
+        meta: { title: '访问控制管理', icon: 'form' }
       }
     ]
   },
 
   {
-    path: 'external-link',
+    path: '/audit',
     component: Layout,
+    redirect: '/audit/auditLogins',
+    name: 'Audit',
+    meta: {
+      title: '日志审计',
+      icon: 'nested'
+    },
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'auditLogins',
+        component: () => import('@/views/audit/auditLogins/index'), // Parent router-view
+        name: 'AuditLogins',
+        meta: { title: '系统登录日志' }
+
+      },
+      {
+        path: 'auditLoginApps',
+        component: () => import('@/views/audit/auditLoginApps/index'),
+        name: 'AuditLoginApps',
+        meta: { title: '应用访问日志' }
+      },
+      {
+        path: 'auditSystemLogs',
+        component: () => import('@/views/audit/auditSystemLogs/index'),
+        name: 'AuditSystemLogs',
+        meta: { title: '系统管理日志' }
       }
     ]
   },
