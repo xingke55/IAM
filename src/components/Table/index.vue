@@ -62,6 +62,10 @@
 <script>
 export default {
   name: 'Table',
+  model: {
+    prop: 'page',
+    event: 'update:page'
+  },
   props: {
     title: {
       type: String,
