@@ -6,13 +6,21 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import { dashBoard } from '@/api/dashboard.js'
 export default {
   name: 'Dashboard',
+  data() {
+    return {
+      res: ''
+    }
+  },
   computed: {
-    ...mapGetters([
-      'name'
-    ])
+    ...mapGetters(['name'])
+  },
+  created() {
+    dashBoard().then((res) => {
+
+    })
   }
 }
 </script>

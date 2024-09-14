@@ -12,16 +12,14 @@
     <div class="content-table">
       <div class="content-inner">
         <el-button type="primary" @click="add">新增</el-button>
-        <el-button
-          type="danger"
-          style="margin-bottom: 10px"
-          @click="remove"
-        >删除</el-button>
+        <el-button type="danger" style="margin-bottom: 10px" @click="remove">删除</el-button>
         <Table
-          v-model="form.pageInfo"
+          v-model="page"
+          v-loading="loading"
           v-bind="tableConfig"
           :list-data="listData"
           :list-count="listData.length"
+          @pageChange="init"
         >
           <template #handler="scope">
             <div class="handle-btns">
@@ -30,7 +28,7 @@
                 plain
                 type="danger"
                 @click="handleRemoveClick(scope.row)"
-              >删除</el-button>
+                >删除</el-button>
             </div>
           </template>
         </Table>
@@ -40,6 +38,7 @@
 </template>
 <script>
 import Table from '@/components/Table'
+import { memberInRole } from '@/api/access.js'
 import { tableConfig } from './tc.config.js'
 export default {
   name: 'Rolemembers',
@@ -53,14 +52,12 @@ export default {
         displayName: '',
         startDate: '',
         endDate: '',
-        nmuber: '',
-        pageInfo: {
-          currentPage: 1,
-          pageSize: 10
-        }
+        nmuber: ''
       },
+      page: { pageNumber: 1, pageSize: 10 },
       showMore: false,
-      listData: [{ name: 'test' }],
+      loading: false,
+      listData: [],
       tableConfig: {}
     }
   },
@@ -74,8 +71,22 @@ export default {
   },
   created() {
     this.tableConfig = tableConfig
+    this.init()
   },
   methods: {
+    init() {
+      this.loading = true
+      memberInRole({ ...this.form, ...this.page })
+        .then((res) => {
+          this.listData = res.data.rows
+          this.loading = false
+          this.page.pageNumber = res.data.page
+          this.page.pageSize = res.data.totalPage
+        })
+        .catch((e) => {
+          this.loading = false
+        })
+    },
     search() {},
     resetForm() {},
     add() {},

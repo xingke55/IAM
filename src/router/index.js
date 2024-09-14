@@ -47,12 +47,14 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: 'index',
-    children: [{
-      path: '/index',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '仪表盘', icon: 'dashboard' }
-    }]
+    children: [
+      {
+        path: '/index',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '仪表盘', icon: 'dashboard' }
+      }
+    ]
   },
 
   {
@@ -70,22 +72,26 @@ export const constantRoutes = [
   {
     path: '/users',
     component: Layout,
-    children: [{
-      path: 'index',
-      component: () => import('@/views/users/index'),
-      name: 'Users',
-      meta: { title: '用户管理', icon: 'tree' }
-    }]
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/users/index'),
+        name: 'Users',
+        meta: { title: '用户管理', icon: 'tree' }
+      }
+    ]
   },
   {
     path: '/application',
     component: Layout,
-    children: [{
-      path: 'index',
-      component: () => import('@/views/application/index'),
-      name: 'Application',
-      meta: { title: '应用管理', icon: 'tree' }
-    }]
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/application/index'),
+        name: 'Application',
+        meta: { title: '应用管理', icon: 'tree' }
+      }
+    ]
   },
 
   {
@@ -140,7 +146,6 @@ export const constantRoutes = [
         component: () => import('@/views/audit/auditLogins/index'), // Parent router-view
         name: 'AuditLogins',
         meta: { title: '系统登录日志' }
-
       },
       {
         path: 'auditLoginApps',
@@ -161,11 +166,12 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 

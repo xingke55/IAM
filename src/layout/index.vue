@@ -2,15 +2,11 @@
   <div>
     <div class="header">
       <div class="left-content">
-        <img
-          style="height: 25px; float: left"
-          src="@/assets/newLogo.png"
-          alt=""
-        />
+        <img style="height: 25px; float: left" src="@/assets/newLogo.png" alt="" />
         <div class="title">河钢统一认证系统</div>
       </div>
       <div class="right-content">
-        <LoginOut/>
+        <LoginOut />
       </div>
     </div>
     <div :class="classObj" class="app-wrapper">
@@ -31,13 +27,13 @@
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain }  from "./components";
-import LoginOut from "./components/LoginOut.vue"
+import { Navbar, Sidebar, AppMain } from './components'
+import LoginOut from './components/LoginOut.vue'
 
-import ResizeMixin from "./mixin/ResizeHandler";
+import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
-  name: "Layout",
+  name: 'Layout',
   components: {
     Navbar,
     Sidebar,
@@ -47,34 +43,34 @@ export default {
   mixins: [ResizeMixin],
   computed: {
     sidebar() {
-      return this.$store.state.app.sidebar;
+      return this.$store.state.app.sidebar
     },
     device() {
-      return this.$store.state.app.device;
+      return this.$store.state.app.device
     },
     fixedHeader() {
-      return this.$store.state.settings.fixedHeader;
+      return this.$store.state.settings.fixedHeader
     },
     classObj() {
       return {
         hideSidebar: !this.sidebar.opened,
         openSidebar: this.sidebar.opened,
         withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === "mobile",
-      };
-    },
+        mobile: this.device === 'mobile'
+      }
+    }
   },
   methods: {
     handleClickOutside() {
-      this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });
-    },
-  },
-};
+      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
-@import "~@/styles/variables.scss";
+@import '~@/styles/mixin.scss';
+@import '~@/styles/variables.scss';
 .header {
   display: flex;
   justify-content: space-between;
@@ -92,8 +88,7 @@ export default {
     justify-content: flex-start;
     align-items: center;
   }
-  .right-content{
-
+  .right-content {
   }
   .title {
     letter-spacing: 2px;

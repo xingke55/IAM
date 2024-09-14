@@ -15,9 +15,7 @@
       </div>
       <el-button type="primary" @click="search">查询</el-button>
       <el-button @click="resetForm">重置</el-button>
-      <el-button @click="showMore = !showMore">{{
-        showMore ? "收起" : "展开"
-      }}</el-button>
+      <el-button @click="showMore = !showMore">{{ showMore ? '收起' : '展开' }}</el-button>
 
       <div v-if="showMore" class="showMore">
         <div>
@@ -44,12 +42,15 @@
     </div>
     <div class="content-table">
       <div class="content-inner">
-        <el-button
-          type="danger"
-          style="margin-bottom: 10px"
-          @click="remove"
-        >删除</el-button>
-        <Table v-bind="tableConfig" :list-data="listData" />
+        <el-button type="danger" style="margin-bottom: 10px" @click="remove">删除</el-button>
+        <Table
+          v-model="page"
+          v-loading="loading"
+          v-bind="tableConfig"
+          :list-data="listData"
+          :list-count="listData.length"
+          @pageChange="init"
+        />
       </div>
     </div>
   </div>
@@ -57,6 +58,7 @@
 <script>
 import Table from '@/components/Table'
 import { tableConfig } from './tc.config.js'
+import { accessSession } from '@/api/access.js'
 export default {
   name: 'Sessions',
   components: {
@@ -71,6 +73,7 @@ export default {
         endDate: '',
         nmuber: ''
       },
+      page: { pageNumber: 1, pageSize: 10 },
       showMore: false,
       listData: [],
       tableConfig: {}
@@ -78,14 +81,26 @@ export default {
   },
   created() {
     this.tableConfig = tableConfig
+    this.init()
   },
   methods: {
+    init() {
+      this.loading = true
+      accessSession({ ...this.form, ...this.page })
+        .then((res) => {
+          this.listData = res.data.rows
+          this.loading = false
+          this.page.pageNumber = res.data.page
+          this.page.pageSize = res.data.totalPage
+        })
+        .catch((e) => {
+          this.loading = false
+        })
+    },
     search() {},
     resetForm() {},
     remove() {},
-    add() {
-
-    }
+    add() {}
   }
 }
 </script>
@@ -108,7 +123,7 @@ export default {
   width: 100%;
   box-sizing: border-box;
   background-color: #f5f7fa;
-  .content-inner{
+  .content-inner {
     background-color: #fff;
     padding: 20px;
     width: 100%;

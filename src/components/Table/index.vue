@@ -15,19 +15,8 @@
       v-bind="childrenProps"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        v-if="showSelectColumn"
-        type="selection"
-        align="center"
-        width="60"
-      />
-      <el-table-column
-        v-if="showIndexColumn"
-        type="index"
-        label="序号"
-        align="center"
-        width="80"
-      />
+      <el-table-column v-if="showSelectColumn" type="selection" align="center" width="60" />
+      <el-table-column v-if="showIndexColumn" type="index" label="序号" align="center" width="80" />
       <template v-for="propItem in propList">
         <el-table-column
           :key="propItem.prop"
@@ -46,9 +35,9 @@
     <div v-if="showFooter" class="footer">
       <slot name="footer">
         <el-pagination
-          :current-page="page.currentPage"
+          :current-page="page.pageNumber"
           :page-size="page.pageSize"
-          :page-sizes="[10, 20, 30]"
+          :page-sizes="[10, 20, 50]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="listCount"
           @size-change="handleSizeChange"
@@ -93,7 +82,7 @@ export default {
     },
     page: {
       type: Object,
-      default: () => ({ currentPage: 0, pageSize: 10 })
+      default: () => ({ pageNumber: 0, pageSize: 10 })
     },
     childrenProps: {
       type: Object,
@@ -108,11 +97,13 @@ export default {
     handleSelectionChange(value) {
       this.$emit('selectionChange', value)
     },
-    handleCurrentChange(currentPage) {
-      this.$emit('update:page', { ...this.page, currentPage })
+    handleCurrentChange(pageNumber) {
+      this.$emit('update:page', { ...this.page, pageNumber })
+      this.$emit('pageChange')
     },
     handleSizeChange(pageSize) {
       this.$emit('update:page', { ...this.page, pageSize })
+      this.$emit('pageChange')
     }
   }
 }
