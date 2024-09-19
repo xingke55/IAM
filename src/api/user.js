@@ -171,3 +171,17 @@ export function get(remember_me) {
     method: 'get'
   })
 }
+export const usersFetch = (params) => {
+  return request({ params, url: 'users/fetch', method: 'get' })
+}
+
+export const usersGet = (id) => {
+  return request({ url: 'users/get/' + id, method: 'get' })
+}
+
+export const usersUpdate = (data) => {
+  return request({ url: 'users/update', method: 'put', data })
+}
+export const usersDelete = (ids) => {
+  return request({ url: 'users/delete?ids=' + ids, method: 'delete' })
+}

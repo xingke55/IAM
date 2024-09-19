@@ -3,12 +3,12 @@
     <div class="search-header">
       <div class="search-select">
         <span>角色名称：</span>
-        <el-input v-model="form.userName" style="width: 200px">
+        <el-input v-model="form.roleName" style="width: 200px">
           <el-button slot="append" type="primary">选择</el-button>
         </el-input>
       </div>
       <div class="search-select">
-        <span>应用名称：</span> <el-input v-model="form.displayName" style="width: 200px" />
+        <span>应用名称：</span> <el-input v-model="form.appName" style="width: 200px" />
       </div>
       <el-button type="primary" @click="search">查询</el-button>
     </div>
@@ -33,9 +33,10 @@
             <div class="handle-btns">
               <el-button
                 style="margin-right: 10px"
+                size="mini"
                 plain
                 type="danger"
-                @click="handleRemoveClick(scope.row)"
+                @click="handleRemoveClick([scope.row.id])"
                 >删除</el-button>
             </div>
           </template>
@@ -47,17 +48,17 @@
 <script>
 import Table from '@/components/Table'
 import { tableConfig } from './tc.config.js'
-import { appsInRole } from '@/api/access.js'
+import { appsInRole, permissionsDelete } from '@/api/access.js'
 export default {
-  name: 'Permission',
+  name: 'Permissions',
   components: {
     Table
   },
   data() {
     return {
       form: {
-        userName: '',
-        displayName: '',
+        roleName: '',
+        appName: '',
         startDate: '',
         endDate: '',
         nmuber: ''
@@ -71,12 +72,15 @@ export default {
   },
   created() {
     this.tableConfig = tableConfig
-    this.init()
+    const params = this.$route.params
+    this.form = { ...this.form, ...params }
+    this.init(params)
   },
   methods: {
-    init() {
+    init(params) {
+      const data = Object.keys(params).length ? { ...this.form, ...this.page, ...params } : { ...this.form, ...this.page }
       this.loading = true
-      appsInRole({ ...this.form, ...this.page })
+      appsInRole(data)
         .then((res) => {
           this.listData = res.data.rows
           this.loading = false
@@ -91,7 +95,23 @@ export default {
     resetForm() {},
     add() {},
     remove() {},
-    handleRemoveClick() {}
+    handleRemoveClick(ids) {
+      const idArr = [...ids]
+      this.loading = true
+      permissionsDelete(idArr.join(','))
+        .then((res) => {
+          if (res.code === 2) {
+            this.loading = false
+            this.$message.success('删除成功')
+            const params = this.$route.params
+            this.form = { ...this.form, ...params }
+            this.init(params)
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
   }
 }
 </script>

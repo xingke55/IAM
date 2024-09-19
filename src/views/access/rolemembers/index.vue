@@ -3,7 +3,7 @@
     <div class="search-header">
       <div class="search-select">
         <span>角色名称：</span>
-        <el-input v-model="form.userName">
+        <el-input v-model="form.roleName">
           <el-button slot="append" type="primary">选择</el-button>
         </el-input>
       </div>
@@ -26,8 +26,9 @@
               <el-button
                 style="margin-right: 10px"
                 plain
+                size="mini"
                 type="danger"
-                @click="handleRemoveClick(scope.row)"
+                @click="handleRemoveClick([scope.row.id])"
                 >删除</el-button>
             </div>
           </template>
@@ -38,7 +39,7 @@
 </template>
 <script>
 import Table from '@/components/Table'
-import { memberInRole } from '@/api/access.js'
+import { memberInRole, rolemembersDelete } from '@/api/access.js'
 import { tableConfig } from './tc.config.js'
 export default {
   name: 'Rolemembers',
@@ -48,7 +49,7 @@ export default {
   data() {
     return {
       form: {
-        userName: '',
+        roleName: '',
         displayName: '',
         startDate: '',
         endDate: '',
@@ -71,12 +72,17 @@ export default {
   },
   created() {
     this.tableConfig = tableConfig
-    this.init()
+    const params = this.$route.params
+    this.form = { ...this.form, ...params }
+    this.init(params)
   },
   methods: {
-    init() {
+    init(params) {
+      const data = Object.keys(params).length
+        ? { ...this.form, ...this.page, ...params }
+        : { ...this.form, ...this.page }
       this.loading = true
-      memberInRole({ ...this.form, ...this.page })
+      memberInRole(data)
         .then((res) => {
           this.listData = res.data.rows
           this.loading = false
@@ -91,7 +97,24 @@ export default {
     resetForm() {},
     add() {},
     remove() {},
-    handleRemoveClick() {}
+    handleRemoveClick(ids) {
+      const idArr = [...ids]
+      this.loading = true
+      rolemembersDelete(idArr.join(','))
+        .then((res) => {
+          if (res.code === 2) {
+            this.loading = false
+            this.$message.success('删除成功')
+            const params = this.$route.params
+
+            this.form = { ...this.form, ...params }
+            this.init(params)
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
   }
 }
 </script>
