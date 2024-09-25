@@ -13,3 +13,15 @@ export const tableConfig = {
   showIndexColumn: true,
   showSelectColumn: true
 }
+export const protocolConfig = {
+  title: '',
+  propList: [
+    { prop: 'src', label: '图标', minWidth: '100', slotName: 'iconHandler' },
+    { prop: 'protocol', label: '协议', minWidth: '100' },
+    { prop: 'desc', label: '描述', minWidth: '150' },
+    { prop: 'version', label: '操作', minWidth: '100', slotName: 'handler' }
+
+  ],
+  showIndexColumn: false,
+  showSelectColumn: false
+}

@@ -12,3 +12,6 @@ export const orgUpdate = (data) => {
 export const orgsDelete = (ids) => {
   return request({ url: 'orgs/delete?ids=' + ids, method: 'delete' })
 }
+export const orgAdd = (data) => {
+  return request({ url: 'orgs/add/', method: 'post', data })
+}

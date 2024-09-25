@@ -78,21 +78,29 @@ export default {
   },
   methods: {
     init(params) {
-      const data = Object.keys(params).length ? { ...this.form, ...this.page, ...params } : { ...this.form, ...this.page }
+      const data = Object.keys(params).length
+        ? { ...this.form, ...this.page, ...params }
+        : { ...this.form, ...this.page }
       this.loading = true
       appsInRole(data)
         .then((res) => {
           this.listData = res.data.rows
           this.loading = false
           this.page.pageNumber = res.data.page
-          this.page.pageSize = res.data.totalPage
         })
         .catch((e) => {
           this.loading = false
         })
     },
-    search() {},
-    resetForm() {},
+    search() {
+      this.init()
+    },
+    resetForm() {
+      const params = this.$route.params
+      this.form = { roleName: '', appName: '', startDate: '', endDate: '', nmuber: '', ...params }
+      this.page = { pageNumber: 1, pageSize: 10 }
+      this.init(params)
+    },
     add() {},
     remove() {},
     handleRemoveClick(ids) {

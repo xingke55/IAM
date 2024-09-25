@@ -87,14 +87,20 @@ export default {
           this.listData = res.data.rows
           this.loading = false
           this.page.pageNumber = res.data.page
-          this.page.pageSize = res.data.totalPage
         })
         .catch((e) => {
           this.loading = false
         })
     },
-    search() {},
-    resetForm() {},
+    search() {
+      this.init()
+    },
+    resetForm() {
+      const params = this.$route.params
+      this.form = { roleName: '', appName: '', startDate: '', endDate: '', nmuber: '', ...params }
+      this.page = { pageNumber: 1, pageSize: 10 }
+      this.init(params)
+    },
     add() {},
     remove() {},
     handleRemoveClick(ids) {

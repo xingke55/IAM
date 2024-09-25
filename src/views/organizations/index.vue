@@ -37,6 +37,7 @@
               :list-data="listData"
               :list-count="listData.length"
               @pageChange="init"
+              @selectionChange="handleSelectionChange"
             >
               <template #handler="scope">
                 <div class="handle-btns">
@@ -47,7 +48,12 @@
                       size="mini"
                       @click="handleEditClick(scope.row.id)"
                       >编辑</el-button>
-                    <el-button size="mini" plain type="danger" @click="handleDeleteOrg([scope.row.orgCode])">删除</el-button>
+                    <el-button
+                      size="mini"
+                      plain
+                      type="danger"
+                      @click="handleDeleteOrg([scope.row.orgCode])"
+                      >删除</el-button>
                   </div>
                 </div>
               </template>
@@ -190,7 +196,7 @@
 import Table from '@/components/Table'
 import FileTree from '@/components/FileTree'
 import { tableConfig } from './tc.config.js'
-import { orgsFetch, orgsGet, orgUpdate, orgsDelete } from '@/api/org.js'
+import { orgsFetch, orgsGet, orgUpdate, orgsDelete, orgAdd } from '@/api/org.js'
 export default {
   name: 'Organizations',
   components: {
@@ -207,6 +213,7 @@ export default {
         nmuber: ''
       },
       formCpn: {},
+      isAdd: true,
       page: { pageNumber: 1, pageSize: 10 },
       loading: false,
       showMore: false,
@@ -435,7 +442,8 @@ export default {
         { value: 'team', label: '组' },
         { value: 'entity', label: '实体' },
         { value: 'virtual', label: '虚拟' }
-      ]
+      ],
+      selections: []
     }
   },
   watch: {
@@ -458,25 +466,79 @@ export default {
           this.listData = res.data.rows
           this.loading = false
           this.page.pageNumber = res.data.page
-          this.page.pageSize = res.data.totalPage
         })
         .catch((e) => {
           this.loading = false
         })
     },
-    search() {},
-    resetForm() {},
-    add() {},
-    remove() {},
+    search() {
+      this.init()
+    },
+    resetForm() {
+      this.form = { roleName: '', appName: '', startDate: '', endDate: '', nmuber: '' }
+      this.page = { pageNumber: 1, pageSize: 10 }
+      this.init()
+    },
+    add() {
+      this.isAdd = true
+      this.dialogVisible = true
+      this.activeName = 'first'
+      this.firstFormEditor = {
+        orgCode: '',
+        orgName: '',
+        fullName: '',
+        type: '',
+        parentName: '',
+        sortIndex: '',
+        status: ''
+      }
+      this.secondFormEditor = {
+        codePath: '',
+        namePath: '',
+        level: 0,
+        division: ''
+      }
+      this.thirdFormEditor = {
+        country: '',
+        region: '',
+        locality: '',
+        street: '',
+        address: ''
+      }
+      this.fourthFormEditor = {
+        contact: '',
+        phone: '',
+        email: '',
+        fax: '',
+        postalCode: ''
+      }
+    },
+    remove() {
+      if (!this.selections.length) {
+        return this.$message.error('请选择至少一条数据！')
+      }
+      const ids = this.selections.map(item => item.orgCode)
+      this.handleDeleteOrg(ids)
+    },
     handleRemoveClick() {},
     changePassword() {},
-
+    handleSelectionChange(value) {
+      this.selections = value
+    },
     handleClickDropCommand() {},
     handleClickNode() {},
     handleUpdateNode() {},
     handleCreateNode() {},
     handleDeleteNode() {},
+    handleTabClick() {
+      if (!this.formCpn[this.activeName]) {
+        this.formCpn[this.activeName] = this.$refs[`${this.activeName}Ref`]
+      } else {
+        return
+      }
+    },
     handleEditClick(id) {
+      this.isAdd = false
       orgsGet(id)
         .then((res) => {
           for (let index = 0; index < 4; index++) {
@@ -526,13 +588,29 @@ export default {
               this.fourthFormEditor,
               this.fifthFormEditor
             )
-            orgUpdate(data)
-              .then((res) => {
-                this.init()
-              })
-              .catch((e) => {
-                console.log(e)
-              })
+            if (this.isAdd) {
+              orgAdd(data)
+                .then((res) => {
+                  this.init()
+                })
+                .catch((e) => {
+                  console.log(e)
+                })
+                .finally(() => {
+                  this.dialogVisible = false
+                })
+            } else {
+              orgUpdate(data)
+                .then((res) => {
+                  this.init()
+                })
+                .catch((e) => {
+                  console.log(e)
+                })
+                .finally(() => {
+                  this.dialogVisible = false
+                })
+            }
           } else {
             let formIndex
             if (index === 0) {
@@ -556,13 +634,15 @@ export default {
     handleDeleteOrg(ids) {
       const idArr = [...ids]
       this.loading = true
-      orgsDelete(idArr.join(',')).then(res => {
-        this.loading = false
-        this.$message.success('删除成功')
-        this.init()
-      }).catch(e => {
-        console.log(e)
-      })
+      orgsDelete(idArr.join(','))
+        .then((res) => {
+          this.loading = false
+          this.$message.success('删除成功')
+          this.init()
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     }
   }
 }

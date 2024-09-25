@@ -38,6 +38,7 @@
               :list-data="listData"
               :list-count="listData.length"
               @pageChange="init"
+              @selectionChange="handleSelectionChange"
             >
               <template #handler="scope">
                 <div class="handle-btns">
@@ -55,7 +56,12 @@
                       <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item><el-button size="mini" type="text">资源</el-button></el-dropdown-item>
 
-                        <el-dropdown-item><el-button size="mini" type="text" style="color: #f56c6c" @click="handleDeleteUser([scope.row.id])">删除</el-button></el-dropdown-item>
+                        <el-dropdown-item><el-button
+                            size="mini"
+                            type="text"
+                            style="color: #f56c6c"
+                            @click="handleDeleteUser([scope.row.id])"
+                            >删除</el-button></el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
@@ -81,8 +87,8 @@
             label-position="right"
             size="mini"
           >
-            <el-form-item label="姓名：" prop="name">
-              <el-input v-model="firstFormEditor.name"></el-input>
+            <el-form-item label="姓名：" prop="displayName">
+              <el-input v-model="firstFormEditor.displayName"></el-input>
             </el-form-item>
             <el-form-item label="登录账号" prop="username">
               <el-input v-model="firstFormEditor.username"></el-input>
@@ -299,13 +305,14 @@
         <el-button type="primary" @click="handleUpdate">提交</el-button>
       </span>
     </el-dialog>
+
   </div>
 </template>
 <script>
 import Table from '@/components/Table'
 import FileTree from '@/components/FileTree'
 import { tableConfig } from './tc.config.js'
-import { usersFetch, usersGet, usersUpdate, usersDelete } from '@/api/user.js'
+import { usersFetch, usersGet, usersUpdate, usersDelete, usersAdd } from '@/api/user.js'
 export default {
   name: 'Users',
   components: {
@@ -325,6 +332,7 @@ export default {
       activeName: 'first',
       loading: false,
       showMore: false,
+      isAdd: true,
       listData: [{ name: 'test' }],
       tableConfig: {},
       options: [
@@ -507,8 +515,9 @@ export default {
         ]
       },
       dialogVisible: false,
+      dialogVisible2: false,
       formEditorRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        displayName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
         username: [{ required: true, message: '请输入登录账号', trigger: 'blur' }],
 
         userType: [{ required: true, message: '请选择用户类型', trigger: 'change' }],
@@ -518,7 +527,7 @@ export default {
       },
       firstFormEditor: {
         gender: 1,
-        name: '',
+        displayName: '',
         username: '',
         loginUrl: '',
         status: '',
@@ -583,6 +592,7 @@ export default {
         homeEmail: ''
       },
       formCpn: {},
+      selections: [],
       userTypeOptions: [
         { label: '内部员工', value: 'EMPLOYEE' },
         { label: '供应商', value: 'SUPPLIER' },
@@ -644,16 +654,100 @@ export default {
           this.listData = res.data.rows
           this.loading = false
           this.page.pageNumber = res.data.page
-          this.page.pageSize = res.data.totalPage
         })
         .catch((e) => {
           this.loading = false
         })
     },
-    search() {},
-    resetForm() {},
-    add() {},
-    remove() {},
+    search() {
+      this.init()
+    },
+    handleSelectionChange(value) {
+      this.selections = value
+    },
+    resetForm() {
+      this.form = { roleName: '', appName: '', startDate: '', endDate: '', nmuber: '' }
+      this.page = { pageNumber: 1, pageSize: 10 }
+      this.init()
+    },
+    add() {
+      // this.isAdd = true
+      this.dialogVisible = true
+      this.activeName = 'first'
+      this.firstFormEditor = {
+        gender: 1,
+        displayName: '',
+        username: '',
+        loginUrl: '',
+        status: '',
+        userState: '',
+        email: '',
+        userType: '',
+        employeeNumber: '',
+        windowsAccount: '',
+        iconBase64: '',
+        mobile: '',
+        sortIndex: 1
+      }
+      this.secondFormEditor = {
+        familyName: '',
+        middleName: '',
+        givenName: 0,
+        nickName: '',
+        idType: '',
+        idCardNo: '',
+        married: '',
+        birthDate: '',
+        education: '',
+        graduateFrom: '',
+        graduateDate: '',
+        startWorkDate: '',
+        timeZone: '',
+        preferredLanguage: '',
+        webSite: '',
+        defineIm: ''
+      }
+      this.thirdFormEditor = {
+        organization: '',
+        division: '',
+        departmentId: '',
+        costCenter: '',
+        jobLevel: '',
+        jobTitle: '',
+        manager: '',
+        assistant: '',
+        entryDate: '',
+        quitDate: '',
+        workOfficeName: ''
+      }
+      this.fourthFormEditor = {
+        workPhoneNumber: '',
+        workEmail: '',
+        workCountry: '',
+        workRegion: '',
+        workLocality: '',
+        workStreetAddress: '',
+        workPostalCode: '',
+        workFax: ''
+      }
+      this.fifthFormEditor = {
+        homePhoneNumber: '',
+        homeFax: '',
+        homePostalCode: '',
+        homeCountry: '',
+        homeRegion: '',
+        homeLocality: '',
+        homeStreetAddress: '',
+        homeEmail: ''
+      }
+    },
+    remove() {
+      if (!this.selections.length) {
+        return this.$message.error('请选择至少一条数据！')
+      }
+      const ids = this.selections.map((item) => item.id)
+      this.handleDeleteUser(ids)
+    },
     handleRemoveClick() {},
     changePassword() {},
 
@@ -721,13 +815,29 @@ export default {
               this.fourthFormEditor,
               this.fifthFormEditor
             )
-            usersUpdate(data)
-              .then((res) => {
-                this.init()
-              })
-              .catch((e) => {
-                console.log(e)
-              })
+            if (this.isAdd) {
+              usersAdd(data)
+                .then((res) => {
+                  this.init()
+                })
+                .catch((e) => {
+                  console.log(e)
+                })
+                .finally(() => {
+                  this.dialogVisible = false
+                })
+            } else {
+              usersUpdate(data)
+                .then((res) => {
+                  this.init()
+                })
+                .catch((e) => {
+                  console.log(e)
+                })
+                .finally(() => {
+                  this.dialogVisible = false
+                })
+            }
           } else {
             let formIndex
             if (index === 0) {
@@ -751,13 +861,15 @@ export default {
     handleDeleteUser(ids) {
       const idArr = [...ids]
       this.loading = true
-      usersDelete(idArr.join(',')).then(res => {
-        this.loading = false
-        this.$message.success('删除成功')
-        this.init()
-      }).catch(e => {
-        console.log(e)
-      })
+      usersDelete(idArr.join(','))
+        .then((res) => {
+          this.loading = false
+          this.$message.success('删除成功')
+          this.init()
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     }
   }
 }

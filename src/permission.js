@@ -9,8 +9,7 @@ const whiteList = ['/login'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  const tokenInfo = JSON.parse(window.localStorage.getItem('token'))
-  if (tokenInfo) {
+  if (window.localStorage.getItem('token')) {
     document.title = getPageTitle(to.meta.title)
     /* has token*/
     if (to.path === '/login') {

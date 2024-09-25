@@ -3,10 +3,10 @@
   <div v-loading="loading" class="container">
     <div class="login-content">
       <div class="login-container">
-        <div class="login-header">
+        <!-- <div class="login-header">
           <div :class="loginClass('acc')" @click="handleActiveClass('acc')">账号登录</div>
           <div :class="loginClass('code')" @click="handleActiveClass('code')">扫码登录</div>
-        </div>
+        </div> -->
         <div class="content">
           <el-form
             v-if="!isqrCode"
@@ -83,17 +83,11 @@ export default {
       if (value.trim() === '') {
         return callback('用户名长度不能为空')
       }
-      if (value.length >= 6) {
-        return callback('用户名不能超过6个字符')
-      }
       return callback()
     }
     const checkPassword = (rule, value, callback) => {
       if (value.trim() === '') {
         return callback('密码不能为空')
-      }
-      if (value.length <= 3) {
-        return callback('密码长度不能低于3个字符')
       }
       callback()
     }
@@ -106,7 +100,7 @@ export default {
     return {
       ruleForm: {
         username: 'admin',
-        password: '111111',
+        password: 'Hbis@123',
         captcha: '',
         rememberMe: true
       },

@@ -57,6 +57,7 @@ export function auth(authJwt) {
   localStorage.setItem(CONSTS.REMEMBER, true)
   localStorage.setItem('user', JSON.stringify(user))
   localStorage.setItem('token', JSON.stringify(authJwt))
+  localStorage.setItem('refresh_token', authJwt.refresh_token)
 }
 export function jwtAuth(authParam) {
   return request({
@@ -157,10 +158,27 @@ export function logout() {
     url: '/logout'
   })
 }
+
 // 清除token
 export function clear() {
   Cookies.set('token', '')
+  Cookies.remove(CONSTS.CONGRESS)
   localStorage.setItem(CONSTS.REMEMBER, '')
+  localStorage.setItem('token', '')
+  localStorage.setItem('access_token', '')
+  localStorage.setItem('user', '')
+  localStorage.setItem('username', '')
+  localStorage.setItem('password', '')
+}
+// 刷新token
+export const refreshToken = (refresh_token) => {
+  return request({
+    url: 'auth/token/refresh?refresh_token=' + refresh_token,
+    method: 'post',
+    data: {
+      refresh_token
+    }
+  })
 }
 // 获取登录信息
 export function get(remember_me) {
@@ -184,4 +202,7 @@ export const usersUpdate = (data) => {
 }
 export const usersDelete = (ids) => {
   return request({ url: 'users/delete?ids=' + ids, method: 'delete' })
+}
+export const usersAdd = (data) => {
+  return request({ url: 'users/add', method: 'post', data })
 }

@@ -21,13 +21,25 @@
         >
           <template #handler="scope">
             <div class="handle-btns">
-              <el-button style="margin-right: 10px" plain size="mini" @click="handleEditClick(scope.row)">编辑</el-button>
+              <el-button
+                style="margin-right: 10px"
+                plain
+                size="mini"
+                @click="handleEditClick(scope.row)"
+                >编辑</el-button>
               <el-dropdown>
-                <el-button size="mini" plain> 更多<i class="el-icon-arrow-down el-icon--right" /> </el-button>
+                <el-button size="mini" plain>
+                  更多<i class="el-icon-arrow-down el-icon--right" />
+                </el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item><el-button size="mini" type="text" @click="routeToMember(scope.row)">成员</el-button></el-dropdown-item>
                   <el-dropdown-item><el-button size="mini" type="text" @click="routeToPermission(scope.row)">访问权限</el-button></el-dropdown-item>
-                  <el-dropdown-item><el-button size="mini" type="text" style="color: #f56c6c" @click="handleDelete([scope.row.roleCode])">删除</el-button></el-dropdown-item>
+                  <el-dropdown-item><el-button
+                      size="mini"
+                      type="text"
+                      style="color: #f56c6c"
+                      @click="handleDelete([scope.row.roleCode])"
+                      >删除</el-button></el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -193,14 +205,19 @@ export default {
           this.listData = res.data.rows
           this.loading = false
           this.page.pageNumber = res.data.page
-          this.page.pageSize = res.data.totalPage
         })
         .catch((e) => {
           this.loading = false
         })
     },
-    search() {},
-    resetForm() {},
+    search() {
+      this.init()
+    },
+    resetForm() {
+      this.form = { roleName: '', appName: '', startDate: '', endDate: '', nmuber: '' }
+      this.page = { pageNumber: 1, pageSize: 10 }
+      this.init()
+    },
     add() {},
     remove() {},
     handleEditClick(data) {
@@ -243,13 +260,15 @@ export default {
     handleDelete(ids) {
       const idArr = [...ids]
       this.loading = true
-      rolesDelete(idArr.join(',')).then(res => {
-        this.loading = false
-        this.$message.success('删除成功')
-        this.init()
-      }).catch(e => {
-        console.log(e)
-      })
+      rolesDelete(idArr.join(','))
+        .then((res) => {
+          this.loading = false
+          this.$message.success('删除成功')
+          this.init()
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     }
   }
 }
